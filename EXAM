@@ -1,0 +1,4 @@
+my_list = [4, 9, 1, 17, 11, 26, 28, 54, 69, 7, 14, 21, 28, 35, 42, 49, 9] 
+result = process_sets(my_list)
+print(f"The original list is: {my_list}")
+print(f"The sorted list of common elements is: {result}")
