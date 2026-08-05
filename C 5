@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <stdlib.h>
+
+int main() {
+
+     int frequency[10] = {0};
+    
+    // Dynamically allocate memory for a string up to 1000 characters plus null terminator
+    char *s = malloc(1001 * sizeof(char));
+    
+    // Read the input string from standard input
+    scanf("%1000s", s);
+    
+    // Iterate through each character of the string until the null terminator
+    for (int i = 0; s[i] != '\0'; i++) {
+        // Check if the current character is a digit between '0' and '9'
+        if (s[i] >= '0' && s[i] <= '9') {
+            // Convert character to integer index by subtracting character '0'
+            frequency[s[i] - '0']++;
+        }
+    }
+    
+    // Print the ten space-separated integers
+    for (int i = 0; i < 10; i++) {
+        printf("%d ", frequency[i]);
+    }
+    printf("\n");
+    
+    // Free the allocated memory
+    free(s);
+        
+    return 0;
+}
