@@ -1,0 +1,76 @@
+#include <stdbool.h>
+#include <stdlib.h>
+
+typedef struct {
+    int *data;
+    int head;
+    int tail;
+    int size;
+    int capacity;
+} MyCircularQueue;
+
+/** Initializes the object with the size of the queue to be k. */
+MyCircularQueue* myCircularQueueCreate(int k) {
+    MyCircularQueue* obj = (MyCircularQueue*)malloc(sizeof(MyCircularQueue));
+    obj->data = (int*)malloc(k * sizeof(int));
+    obj->head = 0;
+    obj->tail = 0;
+    obj->size = 0;
+    obj->capacity = k;
+    return obj;
+}
+
+/** Checks whether the circular queue is empty or not. */
+bool myCircularQueueIsEmpty(MyCircularQueue* obj) {
+    return obj->size == 0;
+}
+
+/** Checks whether the circular queue is full or not. */
+bool myCircularQueueIsFull(MyCircularQueue* obj) {
+    return obj->size == obj->capacity;
+}
+
+/** Inserts an element into the circular queue. Return true if the operation is successful. */
+bool myCircularQueueEnQueue(MyCircularQueue* obj, int value) {
+    if (myCircularQueueIsFull(obj)) {
+        return false;
+    }
+    obj->data[obj->tail] = value;
+    obj->tail = (obj->tail + 1) % obj->capacity;
+    obj->size++;
+    return true;
+}
+
+/** Deletes an element from the circular queue. Return true if the operation is successful. */
+bool myCircularQueueDeQueue(MyCircularQueue* obj) {
+    if (myCircularQueueIsEmpty(obj)) {
+        return false;
+    }
+    obj->head = (obj->head + 1) % obj->capacity;
+    obj->size--;
+    return true;
+}
+
+/** Gets the front item from the queue. If the queue is empty, return -1. */
+int myCircularQueueFront(MyCircularQueue* obj) {
+    if (myCircularQueueIsEmpty(obj)) {
+        return -1;
+    }
+    return obj->data[obj->head];
+}
+
+/** Gets the last item from the queue. If the queue is empty, return -1. */
+int myCircularQueueRear(MyCircularQueue* obj) {
+    if (myCircularQueueIsEmpty(obj)) {
+        return -1;
+    }
+    // Since tail points to the next insertion index, the rear element is at (tail - 1 + capacity) % capacity
+    int rearIndex = (obj->tail - 1 + obj->capacity) % obj->capacity;
+    return obj->data[rearIndex];
+}
+
+/** Frees the memory allocated for the queue. */
+void myCircularQueueFree(MyCircularQueue* obj) {
+    free(obj->data);
+    free(obj);
+}
