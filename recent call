@@ -1,0 +1,40 @@
+#include <stdlib.h>
+
+typedef struct {
+    int* requests; // Dynamic array to store timestamps
+    int capacity;  // Maximum capacity of the array
+    int head;      // Index of the oldest request in the current 3000ms window
+    int tail;      // Index where the next new request will be inserted
+} RecentCounter;
+
+RecentCounter* recentCounterCreate() {
+    RecentCounter* obj = (RecentCounter*)malloc(sizeof(RecentCounter));
+    obj->capacity = 10000; // Initialize with a safe capacity
+    obj->requests = (int*)malloc(obj->capacity * sizeof(int));
+    obj->head = 0;
+    obj->tail = 0;
+    return obj;
+}
+
+int recentCounterPing(RecentCounter* obj, int t) {
+    // 1. Append the new request timestamp
+    if (obj->tail >= obj->capacity) {
+        obj->capacity *= 2;
+        obj->requests = (int*)realloc(obj->requests, obj->capacity * sizeof(int));
+    }
+    obj->requests[obj->tail++] = t;
+    
+    // 2. Remove timestamps that are older than t - 3000
+    int min_time = t - 3000;
+    while (obj->head < obj->tail && obj->requests[obj->head] < min_time) {
+        obj->head++;
+    }
+    
+    // 3. The number of elements in the queue is the size of the valid window
+    return obj->tail - obj->head;
+}
+
+void recentCounterFree(RecentCounter* obj) {
+    free(obj->requests);
+    free(obj);
+}
