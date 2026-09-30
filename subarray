@@ -1,0 +1,34 @@
+#include <math.h>
+int maxSubarraySumCircular(int* nums, int numsSize) {int totalSum = 0;
+    int maxLinear = nums[0];
+    int minLinear = nums[0];
+    int currentMax = 0;
+    int currentMin = 0;
+
+    for (int i = 0; i < numsSize; i++) {
+        totalSum += nums[i];
+
+        // Standard Kadane's for maximum subarray
+        currentMax = (nums[i] > currentMax + nums[i]) ? nums[i] : currentMax + nums[i];
+        if (currentMax > maxLinear) {
+            maxLinear = currentMax;
+        }
+
+        // Kadane's variant for minimum subarray
+        currentMin = (nums[i] < currentMin + nums[i]) ? nums[i] : currentMin + nums[i];
+        if (currentMin < minLinear) {
+            minLinear = currentMin;
+        }
+    }
+
+    // If all numbers are negative, maxLinear is the max element.
+    // Return maxLinear directly to avoid choosing an empty circular subarray.
+    if (maxLinear < 0) {
+        return maxLinear;
+    }
+
+    // Return the larger of the non-circular and circular options
+    int maxCircular = totalSum - minLinear;
+    return (maxLinear > maxCircular) ? maxLinear : maxCircular;
+    
+}
