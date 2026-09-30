@@ -1,0 +1,84 @@
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
+// Helper function to check if stamp can match a substring of target starting at index 'pos'
+bool canMatch(const char* stamp, const char* target, int pos, int stamp_len) {
+    bool has_letter = false;
+    for (int i = 0; i < stamp_len; i++) {
+        if (target[pos + i] == '?') {
+            continue; // '?' acts as a wildcard matching any character
+        }
+        if (target[pos + i] != stamp[i]) {
+            return false; // Character mismatch
+        }rue; // Found at least one actual letter to replace
+    }
+        has_letter = t
+    // Returns true only if it matches and it's not already completely wildcards
+    return has_letter; 
+}
+
+// Helper function to replace matching substring with '?' wildcards
+int doReplace(char* target, int pos, int stamp_len) {
+    int replaced_count = 0;
+    for (int i = 0; i < stamp_len; i++) {
+        if (target[pos + i] != '?') {
+            target[pos + i] = '?';
+            replaced_count++;
+        }
+    }
+    return replaced_count;
+}
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* movesToStamp(char* stamp, char* target, int* returnSize) {int stamp_len = strlen(stamp);
+    int target_len = strlen(target);
+    
+    // Maximum possible turns allowed is 10 * target_len
+    int max_turns = 10 * target_len;
+    int* temp_res = (int*)malloc(max_turns * sizeof(int));
+    int res_idx = 0;
+    
+    bool* visited = (bool*)calloc(target_len, sizeof(bool));
+    int total_replaced = 0;
+    
+    // Keep looking for matches until target is completely replaced with '?'
+    while (total_replaced < target_len) {
+        bool changed = false;
+        
+        // Scan across target for possible match locations
+        for (int i = 0; i <= target_len - stamp_len; i++) {
+            if (!visited[i] && canMatch(stamp, target, i, stamp_len)) {
+                total_replaced += doReplace(target, i, stamp_len);
+                visited[i] = true;
+                temp_res[res_idx++] = i;
+                changed = true;
+                
+                if (total_replaced == target_len) break;
+            }
+        }
+        
+        // If an entire pass completes without a single replacement, it's impossible
+        if (!changed) {
+            free(temp_res);
+            free(visited);
+            *returnSize = 0;
+            return NULL;
+        }
+    }
+    
+    // Reverse the collected indices since we computed from last move to first move
+    *returnSize = res_idx;
+    int* result = (int*)malloc(res_idx * sizeof(int));
+    for (int i = 0; i < res_idx; i++) {
+        result[i] = temp_res[res_idx - 1 - i];
+    }
+    
+    // Clean up temporary allocations
+    free(temp_res);
+    free(visited);
+    
+    return result;
+    
+}
